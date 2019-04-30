@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN apk add --no-cache --virtual .build-deps make gcc g++ python \
- && npm install \
+ && npm install --production --silent \
  && apk del .build-deps
 COPY dist/ ./
 
