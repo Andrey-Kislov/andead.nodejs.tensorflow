@@ -1,11 +1,9 @@
-FROM node:lts-alpine
+FROM node:lts
 
 WORKDIR /app
 COPY package*.json ./
 
-RUN apk add --no-cache --virtual .build-deps make gcc g++ python \
- && npm install --production --silent \
- && apk del .build-deps
+RUN npm install
 COPY dist/ ./
 
 CMD ["node", "index.js"]
