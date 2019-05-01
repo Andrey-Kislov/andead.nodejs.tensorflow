@@ -34,25 +34,26 @@ const startCapture = (chatId) => {
     cocoSsd.load()
         .then(model => {
             setInterval(() => {
-                rec.captureImage(async () => {
+                rec.captureImage(() => {
                     try {
                         image = readImage('./images/capture.jpg');
                         input = imageToInput(image, 3);
 
-                        const predictions = await model.detect(input);
-
-                        if (predictions.filter(item => item.class === 'person').length > 0) {
-                            console.log(`Persons: ${predictions.filter(item => item.class === 'person').length}`);
-
-                            // fs.copyFile('./images/capture.jpg', `./images/${new Date().toISOString().replace(/:/g, '-')}.jpg`, (err) => {
-                            //     if (err) {
-                            //         console.log(err);
-                            //     }
-                            // });
-
-                            photo = fs.readFileSync('./images/capture.jpg');
-                            bot.sendPhoto(chatId, photo);
-                        }
+                        model.detect(input)
+                            .then(predictions => {
+                                if (predictions.filter(item => item.class === 'person').length > 0) {
+                                    console.log(`Persons: ${predictions.filter(item => item.class === 'person').length}`);
+        
+                                    // fs.copyFile('./images/capture.jpg', `./images/${new Date().toISOString().replace(/:/g, '-')}.jpg`, (err) => {
+                                    //     if (err) {
+                                    //         console.log(err);
+                                    //     }
+                                    // });
+        
+                                    photo = fs.readFileSync('./images/capture.jpg');
+                                    bot.sendPhoto(chatId, photo);
+                                }
+                            });
 
                         input.dispose();
                     } catch(err) {
