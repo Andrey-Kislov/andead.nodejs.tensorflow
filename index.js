@@ -14,6 +14,7 @@ const bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     
+    console.log(`Start capture (${chatId})`);
     bot.sendMessage(chatId, 'Start capture...');
     startCapture(chatId);
 });
@@ -26,13 +27,17 @@ const startCapture = (chatId) => {
         type: 'image'
     });
     
+    const image = null;
+    const input = null;
+    const photo = null;
+
     cocoSsd.load()
         .then(model => {
             setInterval(() => {
                 rec.captureImage(() => {
                     try {
-                        const image = readImage('./images/capture.jpg');
-                        const input = imageToInput(image, 3);
+                        image = readImage('./images/capture.jpg');
+                        input = imageToInput(image, 3);
 
                         model.detect(input)
                             .then(predictions => {
@@ -45,12 +50,21 @@ const startCapture = (chatId) => {
                                     //     }
                                     // });
 
-                                    const photo = fs.readFileSync('./images/capture.jpg');
+                                    photo = fs.readFileSync('./images/capture.jpg');
                                     bot.sendPhoto(chatId, photo);
                                 }
                             });
                     } catch(err) {
                         console.log(err);
+                    }
+
+                    try {
+                        if (global.gc) {
+                            global.gc();
+                        }
+                    } catch (e) {
+                        console.log("`node --expose-gc index.js`");
+                        // process.exit();
                     }
                 });
             }, CAPTURE_TIMEOUT);
