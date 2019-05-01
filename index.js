@@ -9,7 +9,7 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || null;
 const RTSP_URL = process.env.RTSP_URL || null;
 const CAPTURE_TIMEOUT = process.env.CAPTURE_TIMEOUT || 5000;
 
-const bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
+const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
@@ -34,37 +34,29 @@ const startCapture = (chatId) => {
     cocoSsd.load()
         .then(model => {
             setInterval(() => {
-                rec.captureImage(() => {
+                rec.captureImage(async () => {
                     try {
                         image = readImage('./images/capture.jpg');
                         input = imageToInput(image, 3);
 
-                        model.detect(input)
-                            .then(predictions => {
-                                if (predictions.filter(item => item.class === 'person').length > 0) {
-                                    console.log(`Persons: ${predictions.filter(item => item.class === 'person').length}`);
+                        const predictions = await model.detect(input);
 
-                                    // fs.copyFile('./images/capture.jpg', `./images/${new Date().toISOString().replace(/:/g, '-')}.jpg`, (err) => {
-                                    //     if (err) {
-                                    //         console.log(err);
-                                    //     }
-                                    // });
+                        if (predictions.filter(item => item.class === 'person').length > 0) {
+                            console.log(`Persons: ${predictions.filter(item => item.class === 'person').length}`);
 
-                                    photo = fs.readFileSync('./images/capture.jpg');
-                                    bot.sendPhoto(chatId, photo);
-                                }
-                            });
+                            // fs.copyFile('./images/capture.jpg', `./images/${new Date().toISOString().replace(/:/g, '-')}.jpg`, (err) => {
+                            //     if (err) {
+                            //         console.log(err);
+                            //     }
+                            // });
+
+                            photo = fs.readFileSync('./images/capture.jpg');
+                            bot.sendPhoto(chatId, photo);
+                        }
+
+                        input.dispose();
                     } catch(err) {
                         console.log(err);
-                    }
-
-                    try {
-                        if (global.gc) {
-                            global.gc();
-                        }
-                    } catch (e) {
-                        console.log("`node --expose-gc index.js`");
-                        // process.exit();
                     }
                 });
             }, CAPTURE_TIMEOUT);
