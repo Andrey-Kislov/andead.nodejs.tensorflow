@@ -27,9 +27,9 @@ const startCapture = (chatId) => {
         type: 'image'
     });
     
-    const image = null;
-    const input = null;
-    const photo = null;
+    let image = null;
+    let input = null;
+    let photo = null;
 
     cocoSsd.load()
         .then(model => {
