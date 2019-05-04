@@ -41,7 +41,7 @@ const startCapture = (chatId) => {
 
                         model.detect(input)
                             .then(predictions => {
-                                if (predictions.filter(item => item.class === 'person').length > 0) {
+                                if (predictions.filter(item => item.class === 'person').length > 2) {
                                     console.log(`Persons: ${predictions.filter(item => item.class === 'person').length}`);
         
                                     // fs.copyFile('./images/capture.jpg', `./images/${new Date().toISOString().replace(/:/g, '-')}.jpg`, (err) => {
