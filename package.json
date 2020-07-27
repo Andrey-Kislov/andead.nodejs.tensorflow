@@ -15,7 +15,7 @@
     "@tensorflow/tfjs": "^1.1.0",
     "@tensorflow/tfjs-node": "^1.1.0",
     "du": "^0.1.0",
-    "jpeg-js": "^0.3.4",
+    "jpeg-js": "^0.4.1",
     "moment": "^2.24.0",
     "node-telegram-bot-api": "^0.30.0"
   },
